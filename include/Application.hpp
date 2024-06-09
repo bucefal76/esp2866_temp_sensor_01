@@ -8,12 +8,14 @@
 
 #include "ModuleConfig.hpp"
 
+class SensorDataSourceIf;
+
 class Application
 {
 public:
     Application();
 
-    void initialize();
+    void initialize(SensorDataSourceIf *sensorsDataSource);
 
     void pushData();
 
@@ -21,6 +23,7 @@ private:
     bool initializeWiFi();
 
     IPAddress m_ServerIpAddress;
+    SensorDataSourceIf *m_pDataSource;
 
     WiFiManager m_WiFiManager;
     WiFiClient m_WiFiClient;
