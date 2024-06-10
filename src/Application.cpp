@@ -3,6 +3,9 @@
 
 #define SERVER_PORT 80U
 
+#define LED_ON LOW
+#define LED_OFF HIGH
+
 Application::Application()
     : m_ServerIpAddress(SERVER_IP_ADDRESS),
       m_pDataSource(nullptr)
@@ -11,6 +14,11 @@ Application::Application()
 
 void Application::initialize(SensorDataSourceIf *sensorsDataSource)
 {
+#ifdef APPLICATION_USE_LED_FOR_ACTIVITY
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, LED_ON);
+#endif
+
     m_pDataSource = sensorsDataSource;
 
     Serial.begin(9600);
@@ -104,6 +112,16 @@ void Application::pushData()
             Serial.println(F("ERROR: The WiFi connection is not established, reset device to try again!"));
         }
     }
+
+#ifdef APPLICATION_USE_LED_FOR_ACTIVITY
+    digitalWrite(LED_BUILTIN, LED_OFF);
+#endif
+
+#ifdef APPLICATION_USE_DEEP_SLEEP
+    Serial.println(F("Going to the deep sleep..."));
+    ESP.deepSleep(APPLICATION_DEEP_SLEEP_TIME);
+    Serial.println(F("ERROR: Shall never get here!"));
+#endif
 
     delay(APPLICATION_DATA_PUSH_TIME_INTERVAL);
 }
