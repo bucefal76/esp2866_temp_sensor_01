@@ -12,5 +12,5 @@ void setup()
 
 void loop()
 {
-  applicationTemperatureSensor.pushData();
+  applicationTemperatureSensor.processingLoop();
 }

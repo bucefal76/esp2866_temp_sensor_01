@@ -6,6 +6,10 @@
 #define LED_ON LOW
 #define LED_OFF HIGH
 
+#ifdef POWER_SUPPLY_DIAGNOSTICS
+ADC_MODE(ADC_VCC);
+#endif
+
 Application::Application()
     : m_ServerIpAddress(SERVER_IP_ADDRESS),
       m_pDataSource(nullptr)
@@ -31,6 +35,37 @@ void Application::initialize(SensorDataSourceIf *sensorsDataSource)
     {
         Serial.println(F("The WiFi connection established!"));
     }
+
+#ifdef APPLICATION_USE_LED_FOR_ACTIVITY
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, LED_OFF);
+#endif
+}
+
+void Application::processingLoop()
+{
+#ifdef APPLICATION_USE_LED_FOR_ACTIVITY
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, LED_ON);
+#endif
+
+    pushData();
+#ifdef POWER_SUPPLY_DIAGNOSTICS
+    diagnosePowerSupply();
+#endif
+
+#ifdef APPLICATION_USE_LED_FOR_ACTIVITY
+    pinMode(LED_BUILTIN, OUTPUT);
+    digitalWrite(LED_BUILTIN, LED_OFF);
+#endif
+
+#ifdef APPLICATION_USE_DEEP_SLEEP
+    Serial.println(F("Going to the deep sleep..."));
+    ESP.deepSleep(APPLICATION_DEEP_SLEEP_TIME);
+    Serial.println(F("ERROR: Shall never get here!"));
+#else
+    delay(APPLICATION_DATA_PUSH_TIME_INTERVAL);
+#endif
 }
 
 void Application::pushData()
@@ -100,6 +135,8 @@ void Application::pushData()
 
                 m_HttpClient.end();
 
+                m_WiFiClient.stop();
+
                 Serial.println(F("[HTTP] SUCCESS: data are send!"));
             }
             else
@@ -112,18 +149,6 @@ void Application::pushData()
             Serial.println(F("ERROR: The WiFi connection is not established, reset device to try again!"));
         }
     }
-
-#ifdef APPLICATION_USE_LED_FOR_ACTIVITY
-    digitalWrite(LED_BUILTIN, LED_OFF);
-#endif
-
-#ifdef APPLICATION_USE_DEEP_SLEEP
-    Serial.println(F("Going to the deep sleep..."));
-    ESP.deepSleep(APPLICATION_DEEP_SLEEP_TIME);
-    Serial.println(F("ERROR: Shall never get here!"));
-#endif
-
-    delay(APPLICATION_DATA_PUSH_TIME_INTERVAL);
 }
 
 bool Application::initializeWiFi()
@@ -154,4 +179,17 @@ bool Application::initializeWiFi()
     }
 
     return result;
+}
+
+void Application::diagnosePowerSupply()
+{
+    Serial.print("System voltage(mV): ");
+
+    const uint16_t currentVoltage = ESP.getVcc();
+    Serial.println(currentVoltage);
+
+    if (currentVoltage < 2.2)
+    {
+        //
+    }
 }

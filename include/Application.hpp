@@ -17,10 +17,12 @@ public:
 
     void initialize(SensorDataSourceIf *sensorsDataSource);
 
-    void pushData();
+    void processingLoop();
 
 private:
     bool initializeWiFi();
+    void pushData();
+    void diagnosePowerSupply();
 
     IPAddress m_ServerIpAddress;
     SensorDataSourceIf *m_pDataSource;
