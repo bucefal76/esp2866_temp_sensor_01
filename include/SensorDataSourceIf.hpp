@@ -6,6 +6,8 @@
 class SensorDataSourceIf
 {
 public:
+    virtual bool initialize() = 0;
+
     virtual size_t getNumberOfSources() const = 0;
 
     virtual String getStrValueOfTheSource(const uint8_t dataSourceId) const = 0;

@@ -23,10 +23,23 @@ void Application::initialize(SensorDataSourceIf *sensorsDataSource)
     digitalWrite(LED_BUILTIN, LED_ON);
 #endif
 
+    // pinMode(SENSOR_ONE_WIRE_INPUT, INPUT_PULLUP);
+
     m_pDataSource = sensorsDataSource;
 
     Serial.begin(9600);
     Serial.println(F(APPLICATION_NAME));
+
+    Serial.println(F("Initializing temperature sensors..."));
+    while (m_pDataSource->initialize() != true)
+    {
+        Serial.println(F("Initializing temperature sensors..."));
+        delay(APPLICATION_DATA_PUSH_TIME_INTERVAL);
+    }
+
+    Serial.println(F("Temperature sensors initalized!"));
+    Serial.print(F("Number of active temperature sensors is: "));
+    Serial.println(m_pDataSource->getNumberOfSources());
 
     // WiFI initialization
     Serial.println(F("Initializing WiFi connection..."));

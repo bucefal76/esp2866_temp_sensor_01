@@ -6,6 +6,8 @@
 class TemperatureDataSource : public SensorDataSourceIf
 {
 public:
+    virtual bool initialize();
+
     virtual size_t getNumberOfSources() const;
 
     virtual String getStrValueOfTheSource(const uint8_t dataSourceId) const;

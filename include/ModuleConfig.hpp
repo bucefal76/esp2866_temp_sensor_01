@@ -16,4 +16,6 @@
 
 #define POWER_SUPPLY_DIAGNOSTICS
 
+#define SENSOR_ONE_WIRE_INPUT D2
+
 #endif
