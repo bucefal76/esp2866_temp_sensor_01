@@ -39,7 +39,7 @@ void Application::initialize(SensorDataSourceIf *sensorsDataSource)
 
     Serial.println(F("Temperature sensors initalized!"));
     Serial.print(F("Number of active temperature sensors is: "));
-    Serial.println(m_pDataSource->getNumberOfSources());
+    Serial.println(m_pDataSource->getNumberOfSensors());
 
     // WiFI initialization
     Serial.println(F("Initializing WiFi connection..."));
@@ -103,14 +103,14 @@ void Application::pushData()
                 url += SERVER_API_KEY;
                 url += "?";
 
-                for (uint8_t i = 0; i < m_pDataSource->getNumberOfSources(); i++)
+                for (uint8_t i = 0; i < m_pDataSource->getNumberOfSensors(); i++)
                 {
                     url += "module";
                     url += String(i + 1);
                     url += "=";
-                    url += m_pDataSource->getStrValueOfTheSource(i);
+                    url += m_pDataSource->getStrValueOfTheSensor(i);
 
-                    if (i < m_pDataSource->getNumberOfSources() - 1)
+                    if (i < m_pDataSource->getNumberOfSensors() - 1)
                     {
                         url += "&";
                     }
