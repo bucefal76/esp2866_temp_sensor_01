@@ -6,9 +6,15 @@
 class SensorDataSourceIf
 {
 public:
-    virtual size_t getNumberOfSources() const = 0;
-
-    virtual String getStrValueOfTheSource(const uint8_t dataSourceId) const = 0;
+    /// @brief  Do some preparation on the sensor.
+    /// @return True if initialization succeeded.
+    virtual bool initialize() = 0;
+    /// @brief Returns number os temperature sensors.
+    virtual size_t getNumberOfSensors() const = 0;
+    /// @brief  Returns temperate in Celsius.
+    /// @param sensorId Id of the sensor we would like to have data read.
+    /// @return String that represents float value.
+    virtual String getStrValueOfTheSensor(const uint8_t sensorId) const = 0;
 };
 
 #endif

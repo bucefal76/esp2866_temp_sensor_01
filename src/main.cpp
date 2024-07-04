@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #include "Application.hpp"
-#include "TemperatureDataSource.hpp"
+#include "DallasTemperatureSensor\DallasTemperartureSensor.hpp"
 
 Application applicationTemperatureSensor;
-TemperatureDataSource temperatureDataSource;
+DallasTemperatureSensor temperatureDataSource;
 
 void setup()
 {

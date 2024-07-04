@@ -14,9 +14,10 @@ class Application
 {
 public:
     Application();
-
+    /// @brief Initalized application and sensor.
+    /// @param sensorsDataSource Pointer to the sensors data source object.
     void initialize(SensorDataSourceIf *sensorsDataSource);
-
+    /// @brief Do processing. Call it in the main loop.
     void processingLoop();
 
 private:
