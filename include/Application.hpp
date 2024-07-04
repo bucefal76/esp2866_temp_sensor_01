@@ -8,15 +8,15 @@
 
 #include "ModuleConfig.hpp"
 
-class SensorDataSourceIf;
+class DataSourceIf;
 
 class Application
 {
 public:
     Application();
     /// @brief Initalized application and sensor.
-    /// @param sensorsDataSource Pointer to the sensors data source object.
-    void initialize(SensorDataSourceIf *sensorsDataSource);
+    /// @param dataSource Pointer to the sensors data source object.
+    void initialize(DataSourceIf *dataSource);
     /// @brief Do processing. Call it in the main loop.
     void processingLoop();
 
@@ -26,7 +26,7 @@ private:
     void diagnosePowerSupply();
 
     IPAddress m_ServerIpAddress;
-    SensorDataSourceIf *m_pDataSource;
+    DataSourceIf *m_pDataSource;
 
     WiFiManager m_WiFiManager;
     WiFiClient m_WiFiClient;

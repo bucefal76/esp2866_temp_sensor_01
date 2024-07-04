@@ -1,5 +1,6 @@
 #include "Application.hpp"
-#include "SensorDataSourceIf.hpp"
+#include "DataSourceIf.hpp"
+#include "DallasTemperatureSensor\DallasTemperatureDataSource.hpp"
 
 #define SERVER_PORT 80U
 
@@ -16,14 +17,14 @@ Application::Application()
 {
 }
 
-void Application::initialize(SensorDataSourceIf *sensorsDataSource)
+void Application::initialize(DataSourceIf *dataSource)
 {
 #ifdef APPLICATION_USE_LED_FOR_ACTIVITY
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, LED_ON);
 #endif
 
-    m_pDataSource = sensorsDataSource;
+    m_pDataSource = dataSource;
 
 #ifdef USE_SERIAL
     Serial.begin(9600);
@@ -31,7 +32,7 @@ void Application::initialize(SensorDataSourceIf *sensorsDataSource)
 
     Serial.println(F("Initializing temperature sensors..."));
 #endif
-    while (m_pDataSource->initialize() != true)
+    while (m_pDataSource->initializeDataSource() != true)
     {
 #ifdef USE_SERIAL
         Serial.println(F("Initializing temperature sensors..."));
@@ -42,7 +43,7 @@ void Application::initialize(SensorDataSourceIf *sensorsDataSource)
 #ifdef USE_SERIAL
     Serial.println(F("Temperature sensors initalized!"));
     Serial.print(F("Number of active temperature sensors is: "));
-    Serial.println(m_pDataSource->getNumberOfSensors());
+    Serial.println(DallasTemperatureDataSource::getNumberOfSensors());
 
     // WiFI initialization
     Serial.println(F("Initializing WiFi connection..."));
@@ -117,18 +118,7 @@ void Application::pushData()
                 url += SERVER_API_KEY;
                 url += "?";
 
-                for (uint8_t i = 0; i < m_pDataSource->getNumberOfSensors(); i++)
-                {
-                    url += "module";
-                    url += String(i + 1);
-                    url += "=";
-                    url += m_pDataSource->getStrValueOfTheSensor(i);
-
-                    if (i < m_pDataSource->getNumberOfSensors() - 1)
-                    {
-                        url += "&";
-                    }
-                }
+                url += m_pDataSource->getDataString();
 
 #ifdef USE_SERIAL
                 Serial.print(F("[HTTP] Requesting URL: "));
@@ -148,25 +138,25 @@ void Application::pushData()
                 if (httpCode > 0)
                 {
                     // HTTP header has been send and Server response header has been handled
-#ifdef USE_SERIAL                    
+#ifdef USE_SERIAL
                     Serial.printf("[HTTP] GET... code: %d\n", httpCode);
-#endif                    
+#endif
 
                     // file found at server
                     if (httpCode == HTTP_CODE_OK)
                     {
                         String payload = m_HttpClient.getString();
-#ifdef USE_SERIAL                        
+#ifdef USE_SERIAL
                         Serial.print(F("[HTTP] Payload is:"));
                         Serial.println(payload);
-#endif                        
+#endif
                     }
                 }
                 else
                 {
-#ifdef USE_SERIAL                    
+#ifdef USE_SERIAL
                     Serial.printf("[HTTP] GET... failed, error: %s\n", m_HttpClient.errorToString(httpCode).c_str());
-#endif                    
+#endif
                 }
 
                 m_HttpClient.end();
@@ -174,20 +164,20 @@ void Application::pushData()
                 m_WiFiClient.stop();
 #ifdef USE_SERIAL
                 Serial.println(F("[HTTP] SUCCESS: data are send!"));
-#endif                
+#endif
             }
             else
             {
-#ifdef USE_SERIAL                
+#ifdef USE_SERIAL
                 Serial.println(F("ERROR: Cannot connect to the server, will try again in a minute!"));
-#endif                
+#endif
             }
         }
         else
         {
-#ifdef USE_SERIAL            
+#ifdef USE_SERIAL
             Serial.println(F("ERROR: The WiFi connection is not established, reset device to try again!"));
-#endif            
+#endif
         }
     }
 }
@@ -204,19 +194,19 @@ bool Application::initializeWiFi()
 
         if (result == false)
         {
-#ifdef USE_SERIAL            
+#ifdef USE_SERIAL
             Serial.print(F("ERROR: Failed WiFI connection try #:"));
             Serial.println(tryNo);
-#endif            
+#endif
 
             delay(2500);
             tryNo++;
 
             if (tryNo > 3)
             {
-#ifdef USE_SERIAL                
+#ifdef USE_SERIAL
                 Serial.print(F("Resetting WiFI  settings now!"));
-#endif                
+#endif
                 m_WiFiManager.resetSettings();
                 tryNo = 0;
             }
