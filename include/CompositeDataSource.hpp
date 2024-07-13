@@ -11,9 +11,9 @@ public:
     virtual String getDataString() override;
     /// @brief See DataSourceIf
     virtual bool initializeDataSource() override;
-
+    /// @brief Add DataSourceIf to composite structure
     void addDataSource(DataSourceIf *pDataSource);
-
+    /// @brief Get number of added DataSourceIf objects.
     uint32_t getNumberOfSources() const;
 
 private:

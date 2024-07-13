@@ -2,21 +2,32 @@
 #include "Application.hpp"
 #include "CompositeDataSource.hpp"
 #include "DallasTemperatureSensor/DallasTemperatureDataSource.hpp"
+#include "PowerVoltageDataSource.hpp"
+#include "SerialPrintAssert.hpp"
 #include "ModuleConfig.hpp"
 
 Application applicationTemperatureSensor;
-CompositeDataSource compositeDataSource;
 
 void setup()
 {
+  CompositeDataSource *pCompositeDataSource = new CompositeDataSource();
+  RUNTIME_PTR_CHECK(pCompositeDataSource);
+
   // Create sensors and put them into the temperature composite:
   for (uint8_t i = 0; i < APPLICATION_NUMBER_OF_SENSORS; i++)
   {
     DallasTemperatureDataSource *pDataSource = new DallasTemperatureDataSource();
-    compositeDataSource.addDataSource(pDataSource);
+    RUNTIME_PTR_CHECK(pDataSource);
+    pCompositeDataSource->addDataSource(pDataSource);
   }
 
-  applicationTemperatureSensor.initialize(&compositeDataSource);
+#ifdef POWER_SUPPLY_DIAGNOSTICS
+  PowerVoltageDataSource *pPowerVoltageDataSource = new PowerVoltageDataSource();
+  RUNTIME_PTR_CHECK(pPowerVoltageDataSource);
+  pCompositeDataSource->addDataSource(pPowerVoltageDataSource);
+#endif
+
+  applicationTemperatureSensor.initialize(pCompositeDataSource);
 }
 
 void loop()

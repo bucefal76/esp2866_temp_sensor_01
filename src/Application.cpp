@@ -70,9 +70,6 @@ void Application::processingLoop()
 #endif
 
     pushData();
-#ifdef POWER_SUPPLY_DIAGNOSTICS
-    diagnosePowerSupply();
-#endif
 
 #ifdef APPLICATION_USE_LED_FOR_ACTIVITY
     pinMode(LED_BUILTIN, OUTPUT);
@@ -214,17 +211,4 @@ bool Application::initializeWiFi()
     }
 
     return result;
-}
-
-void Application::diagnosePowerSupply()
-{
-    Serial.print("System voltage(mV): ");
-
-    const uint16_t currentVoltage = ESP.getVcc();
-    Serial.println(currentVoltage);
-
-    if (currentVoltage < 2.2)
-    {
-        //
-    }
 }
