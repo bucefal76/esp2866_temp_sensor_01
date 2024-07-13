@@ -24,6 +24,8 @@ void Application::initialize(DataSourceIf *dataSource)
     digitalWrite(LED_BUILTIN, LED_ON);
 #endif
 
+    pinMode(WIFI_SETTINGS_CLEAR_INPUT_LINE, INPUT);
+
     m_pDataSource = dataSource;
 
 #ifdef USE_SERIAL
@@ -181,12 +183,27 @@ void Application::pushData()
 
 bool Application::initializeWiFi()
 {
+#ifdef WIFI_SETTINGS_CLEAR_INPUT_LINE
+    bool doWiFiReset = !digitalRead(WIFI_SETTINGS_CLEAR_INPUT_LINE);
+#else
+    bool doWiFiReset = false;
+#endif
+
     bool result = false;
 
     uint8_t tryNo = 0;
 
     while (false == result)
     {
+        if (true == doWiFiReset)
+        {
+            Serial.println(F("Resetting WiFI settings now by user request!"));
+            m_WiFiManager.resetSettings();
+            delay(500);
+
+            doWiFiReset = false;
+        }
+
         result = m_WiFiManager.autoConnect(APPLICATION_NAME);
 
         if (result == false)
@@ -202,7 +219,8 @@ bool Application::initializeWiFi()
             if (tryNo > 3)
             {
 #ifdef USE_SERIAL
-                Serial.print(F("Resetting WiFI  settings now!"));
+                Serial.println(F("Could not get connection with old settings ..."));
+                Serial.println(F("Resetting WiFI settings now!"));
 #endif
                 m_WiFiManager.resetSettings();
                 tryNo = 0;

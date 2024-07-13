@@ -11,10 +11,11 @@ uint8_t DallasTemperatureDataSource::m_referenceCount = 0U;
 bool DallasTemperatureDataSource::m_initalizedWitchSuccess = false;
 
 DallasTemperatureDataSource::DallasTemperatureDataSource()
+    : m_dataSourceId(0U)
 {
     if (nullptr == m_pOneWire)
     {
-        m_pOneWire = new OneWire(SENSOR_ONE_WIRE_INPUT);
+        m_pOneWire = new OneWire(SENSOR_ONE_WIRE_INPUT_LINE);
     }
     RUNTIME_PTR_CHECK(m_pOneWire);
 
@@ -65,6 +66,7 @@ String DallasTemperatureDataSource::getDataString()
     RUNTIME_PTR_CHECK(m_pDallasTemperature);
 
     m_pDallasTemperature->requestTemperatures();
-    float temperatureC = m_pDallasTemperature->getTempCByIndex(m_dataSourceId);
+    const float temperatureC = m_pDallasTemperature->getTempCByIndex(m_dataSourceId);
+
     return String(temperatureC);
 }

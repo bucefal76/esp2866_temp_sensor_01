@@ -2,7 +2,8 @@
 #include "Application.hpp"
 #include "CompositeDataSource.hpp"
 #include "DallasTemperatureSensor/DallasTemperatureDataSource.hpp"
-#include "PowerVoltageDataSource.hpp"
+#include "PowerVoltageDataSource/PowerVoltageDataSource.hpp"
+#include "PowerVoltageDataSource/PowerVoltageThresholdDataSource.hpp"
 #include "SerialPrintAssert.hpp"
 #include "ModuleConfig.hpp"
 
@@ -25,6 +26,10 @@ void setup()
   PowerVoltageDataSource *pPowerVoltageDataSource = new PowerVoltageDataSource();
   RUNTIME_PTR_CHECK(pPowerVoltageDataSource);
   pCompositeDataSource->addDataSource(pPowerVoltageDataSource);
+
+  PowerVoltageThresholdDataSource *pPowerVoltageThresholdDataSource = new PowerVoltageThresholdDataSource;
+  RUNTIME_PTR_CHECK(pPowerVoltageThresholdDataSource);
+  pCompositeDataSource->addDataSource(pPowerVoltageThresholdDataSource);
 #endif
 
   applicationTemperatureSensor.initialize(pCompositeDataSource);
