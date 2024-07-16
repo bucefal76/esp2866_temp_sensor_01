@@ -1,7 +1,5 @@
 #include "PowerVoltageDataSource/PowerVoltageThresholdDataSource.hpp"
-
-#define VOLTAGE_LEVEL_WARNING 2320
-#define VOLTAGE_LEVEL_ERROR 2200
+#include "ModuleConfig.hpp"
 
 bool PowerVoltageThresholdDataSource::initializeDataSource()
 {

@@ -1,5 +1,6 @@
 #include <Arduino.h>
-#include "Application.hpp"
+#include "Application/Application.hpp"
+#include "Application/PowerLocker.hpp"
 #include "CompositeDataSource.hpp"
 #include "DallasTemperatureSensor/DallasTemperatureDataSource.hpp"
 #include "PowerVoltageDataSource/PowerVoltageDataSource.hpp"
@@ -33,6 +34,8 @@ void setup()
 #endif
 
   applicationTemperatureSensor.initialize(pCompositeDataSource);
+
+  PowerLocker();
 }
 
 void loop()
